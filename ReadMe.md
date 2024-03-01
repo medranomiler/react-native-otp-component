@@ -1,36 +1,20 @@
 ## Example Usage
 
 ```
+import { Text, Button } from "react-native";
+import { TextInput } from "react-native";
 import { useRef, useState } from "react";
-import type { TextInput } from "react-native";
-import {
-  KeyboardAvoidingView,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { useSignUp } from "@clerk/clerk-expo";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { View } from "../../components/Themed";
+import { OTPInput } from "react-native-otp-component";
 
-import { OTPInput } from "~/components/OTPInput";
-import { isClerkError } from "~/utils/isClerkError";
-
-export default function PhoneVerificationScreen() {
-  const { isLoaded, signUp } = useSignUp();
+export default function SignIn() {
   const [codes, setCodes] = useState<string[] | undefined>(Array(6).fill(""));
   const refs = Array(6)
     .fill(null)
     .map(() => useRef<TextInput>(null));
 
   const [errorMessages, setErrorMessages] = useState<string[]>();
-  const router = useRouter();
 
-  if (!isLoaded) {
-    return <Text>Loading...</Text>;
-  }
 
   const onChangeCode = (text: string, index: number) => {
     if (text.length > 1) {
@@ -49,45 +33,29 @@ export default function PhoneVerificationScreen() {
     }
   };
 
-  async function verifyPhoneNumberAndProgress() {
-    const fullCode = codes!.join("");
-    try {
-      await signUp?.attemptPhoneNumberVerification({ code: fullCode });
-    } catch (err: unknown) {
-      // handle the error 
-    }
-
-    router.replace("/profile/sign-up/phone-verified");
+  const otpConfig = {
+    borderColor: "#fff",
+    backgroundColor: "#fff",
+    textColor: "#000",
+    errorColor: "#dc2626",
+    focusColor: "#22c55e"
   }
 
   return (
-    <SafeAreaView className={"flex h-full w-full flex-1 bg-[#fff]"}>
-      <KeyboardAvoidingView>
-        <TouchableWithoutFeedback>
-          <View className={"flex flex-col gap-y-4 p-4"}>
-            <View>
-              <Text className={"mb-2 text-center text-2xl font-semibold"}>
-                Sign Up
-              </Text>
-              <Text className={"text-center text-lg"}>1/3</Text>
-            </View>
-            <View className={"flex flex-col items-center mb-4"}>
-              <Text className={"mb-2 text-center text-2xl font-semibold"}>
-                Enter verification code
-              </Text>
-              <Text className={"w-2/3 text-center text-lg"}>
-                We just texted the code to your phone number
-              </Text>
-            </View>
-            <OTPInput
-              codes={codes!}
-              errorMessages={errorMessages}
-              onChangeCode={onChangeCode}
-              refs={refs}
-            />
-     // the rest of the code
-     </KeyboardAvoidingView>
-    </SafeAreaView>
+    <View style={{height: "100%", width: "100%", justifyContent: "center", alignItems: "center"}}>
+      <Text>Enter the verification code</Text>
+      <OTPInput
+        codes={codes!}
+        errorMessages={errorMessages}
+        onChangeCode={onChangeCode}
+        refs={refs}
+        config={otpConfig}
+      />
+      <Button title="Enter" onPress={()=> {
+        const fullCode = codes?.join('')
+        console.error(fullCode)
+      }}/>
+    </View>
   );
 }
 ```

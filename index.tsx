@@ -1,11 +1,20 @@
-import type { RefObject } from "react";
-import { TextInput, View } from "react-native";
+import { useState, type RefObject } from "react";
+import { TextInput, View, StyleSheet } from "react-native";
 
 interface OTPInputProps {
   codes: string[];
   refs: RefObject<TextInput>[];
   errorMessages: string[] | undefined;
   onChangeCode: (text: string, index: number) => void;
+  config: OTPInputConfig; // New prop for configuration object
+}
+
+interface OTPInputConfig {
+  backgroundColor: string;
+  textColor: string;
+  borderColor: string;
+  errorColor: string;
+  focusColor: string;
 }
 
 export function OTPInput({
@@ -13,23 +22,57 @@ export function OTPInput({
   refs,
   errorMessages,
   onChangeCode,
+  config, // Receive the configuration object as a prop
 }: OTPInputProps) {
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      width: "100%",
+      justifyContent: "space-between",
+    },
+    input: {
+      fontSize: 16,
+      height: 48,
+      width: 48,
+      borderRadius: 8,
+      textAlign: "center",
+      backgroundColor: config.backgroundColor,
+      color: config.textColor,
+      borderColor: config.borderColor,
+      borderWidth: 2,
+    },
+    errorInput: {
+      borderColor: config.errorColor,
+      color: config.errorColor,
+    },
+    focusedInput: {
+      borderColor: config.focusColor,
+    }
+  });
+
+  const handleFocus = (index: number) => setFocusedIndex(index);
+  const handleBlur = () => setFocusedIndex(null);
+
   return (
-    <View className="flex w-full flex-row justify-between">
+    <View style={styles.container}>
       {codes.map((code, index) => (
         <TextInput
           key={index}
           autoComplete="one-time-code"
           enterKeyHint="next"
-          className={`text-md h-[48] w-[48] rounded-lg bg-[#94a3b8] px-2 py-1 text-center focus:border focus:border-[#fff] ${
-            errorMessages !== undefined
-              ? "border border-[#ef4444] text-[#ef4444]"
-              : "text-[#fff]"
-          }`}
+          style={[
+            styles.input, 
+            errorMessages && styles.errorInput,
+            focusedIndex === index && styles.focusedInput,
+          ]}
           inputMode="numeric"
-          onChangeText={(text: string) => onChangeCode(text, index)}
+          onChangeText={(text) => onChangeCode(text, index)}
           value={code}
-          maxLength={codes.length}
+          onFocus={()=> handleFocus(index)}
+          onBlur={handleBlur}
+          maxLength={index === 0 ? codes.length : 1}
           ref={refs[index]}
           onKeyPress={({ nativeEvent: { key } }) => {
             if (key === "Backspace" && index > 0) {
