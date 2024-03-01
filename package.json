@@ -1,0 +1,19 @@
+{
+  "name": "react-native-otp-component",
+  "version": "1.0.2",
+  "description": "A react native component for quickly implementing a one-time-password ui component",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": "Darren M",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-native": "^0.64.0",
+    "native-wind": "^2.0.11"
+  }
+}
