@@ -9,9 +9,14 @@ import { OTPInput } from "react-native-otp-component";
 
 export default function SignIn() {
   const [codes, setCodes] = useState<string[] | undefined>(Array(6).fill(""));
-  const refs = Array(6)
-    .fill(null)
-    .map(() => useRef<TextInput>(null));
+  const refs = [
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null)
+  ]
 
   const [errorMessages, setErrorMessages] = useState<string[]>();
 
